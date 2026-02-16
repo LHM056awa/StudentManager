@@ -5,3 +5,5 @@
 运行后需要输入密码。
 
 密码是：`lhm`
+
+编译出的`StudentManager.exe`使用的参数是`-static -static-libgcc -static-libstdc++ -DNDEBUG -s -O3`，所以按理来说基本不需要安装其他运行库。
