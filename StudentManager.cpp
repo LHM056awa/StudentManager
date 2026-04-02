@@ -1,6 +1,11 @@
 #include<iostream>
 #include<conio.h>
 #include<fstream>
+#include <windows.h>
+#include <wincrypt.h>
+#include <sstream>
+#include <iomanip>
+#pragma comment(lib, "advapi32.lib")
 using namespace std;
 int listsize,idcount;
 struct student{
@@ -35,12 +40,44 @@ string mask(){
     }
     return password;
 }
+std::string sha256(const std::string& input) {
+    HCRYPTPROV hProv = 0;
+    HCRYPTHASH hHash = 0;
+    BYTE hash[32]; // SHA256 输出 32 字节
+    DWORD hashLen = 32;
+
+    if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT))
+        return "";
+    if (!CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash)) {
+        CryptReleaseContext(hProv, 0);
+        return "";
+    }
+    if (!CryptHashData(hHash, (BYTE*)input.c_str(), input.length(), 0)) {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return "";
+    }
+    if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashLen, 0)) {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return "";
+    }
+    CryptDestroyHash(hHash);
+    CryptReleaseContext(hProv, 0);
+
+    std::stringstream ss;
+    for (DWORD i = 0; i < hashLen; ++i) {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    return ss.str();
+}
 bool verify() {
-    string password=mask();
-    if(password=="lhm") {
+    std::string password = mask();
+    const std::string correctHash = "9e74e921e470e635ef7256f7fde6479070849277f0a0c7e71681e057fa41f25c";
+    if (sha256(password) == correctHash) {
         return true;
     } else {
-        cout << "Wrong password!" << endl;
+        std::cout << "Wrong password!" << std::endl;
         return false;
     }
 }
