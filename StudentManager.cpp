@@ -269,40 +269,18 @@ int main(){
     node *head=initialize();
     while(1){
         int choice=menu();
-        if(choice==0){
-            reset(head);
-            return 0;
-        }
-        else if(choice==1){
-            add(head);
-        }
-        else if(choice==2){
-            del(head);
-        }
-        else if(choice==3){
-            search(head);
-        }
-        else if(choice==4){
-            display(head);
-        }
-        else if(choice==5){
-            modify(head);
-        }
-        else if(choice==6){
-            cout<<"Total number of students: "<<listsize<<endl;
-        }
-        else if(choice==7){
-            head=sort(head);
-        }
-        else if(choice==8){
-            save(head);
-        }
-        else if(choice==9){
-            reset(head);
-            head=load();
-        }
-        else{
-            cout<<"Invalid choice"<<endl;
+        switch(choice){
+            case 0:reset(head);return 0;
+            case 1:add(head);break;
+            case 2:del(head);break;
+            case 3:search(head);break;
+            case 4:display(head);break;
+            case 5:modify(head);break;
+            case 6:cout<<"Total number of students: "<<listsize<<endl;break;
+            case 7:head=sort(head);break;
+            case 8:save(head);break;
+            case 9:reset(head);head=load();break;
+            default:cout<<"Invalid choice"<<endl;break;
         }
         system("pause");
     }
