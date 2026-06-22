@@ -16,7 +16,7 @@ string mask(){
     string password="";
     char ch;
     cout<<"Enter your password: "<<flush;
-    while(1){
+    while(true){
         ch=_getch();
         if(ch==13||ch==10){
             cout<<endl;
@@ -68,18 +68,18 @@ node *initialize(){
     head->data.id=0;
     head->data.no=-1;
     head->data.name="head";
-    head->next=NULL;
+    head->next=nullptr;
     return head;
 }
 void add(node *cur){
     node *temp=new node;
-    temp->next=NULL;
+    temp->next=nullptr;
     cout<<"Enter number: ";
     cin>>temp->data.no;
     cout<<"Enter name: ";
     cin>>temp->data.name;
     temp->data.id=++idcount;
-    while(cur->next!=NULL){
+    while(cur->next!=nullptr){
         cur=cur->next;
     }
     cur->next=temp;
@@ -94,7 +94,7 @@ void del(node *cur){
         cout<<"ID: "<<id<<" not found"<<endl;
         return;
     }
-    while(cur->next!=NULL){
+    while(cur->next!=nullptr){
         if(cur->next->data.id==id){
             node *temp=cur->next;
             cur->next=cur->next->next;
@@ -113,7 +113,7 @@ void search(node *cur){
     cout<<"ID to be searched: ";
     int id;
     cin>>id;
-    while(cur->next!=NULL){
+    while(cur->next!=nullptr){
         if(cur->next->data.id==id){
             cout<<"ID Number Name"<<endl;
             cout<<cur->next->data.id<<" "<<cur->next->data.no<<" "<<cur->next->data.name<<endl;
@@ -128,7 +128,7 @@ void search(node *cur){
 void display(node *cur){
     cout<<"ID Number Name"<<endl;
     cur=cur->next;
-    while(cur!=NULL){
+    while(cur!=nullptr){
         cout<<cur->data.id<<" "<<cur->data.no<<" "<<cur->data.name<<endl;
         cur=cur->next;
     }
@@ -141,7 +141,7 @@ void modify(node *cur){
         cout<<"ID: "<<id<<" not found"<<endl;
         return;
     }
-    while(cur->next!=NULL){
+    while(cur->next!=nullptr){
         if(cur->next->data.id==id){
             cout<<"Enter new number: ";
             cin>>cur->next->data.no;
@@ -156,26 +156,26 @@ void modify(node *cur){
     }
     cout<<"ID: "<<id<<" not found"<<endl;
 }
-node *sort(node *old){
-    node *head=initialize(),*minp=old,*newcur=head,*oldcur=old;
+node *sortlist(node *old){
     if(listsize>0){
+        node *head=initialize(),*minp=old,*newcur=head,*oldcur=old;
         for(int i=0;i<listsize;++i){
             int minno=old->next->data.no;
             oldcur=old;
             minp=old;
-            while(oldcur->next!=NULL){
+            while(oldcur->next!=nullptr){
                 if(oldcur->next->data.no<minno){
                     minp=oldcur;
                     minno=minp->next->data.no;
                 }
                 oldcur=oldcur->next;
             }
-            while(newcur->next!=NULL){
+            while(newcur->next!=nullptr){
                 newcur=newcur->next;
             }
             newcur->next=minp->next;
             minp->next=minp->next->next;
-            newcur->next->next=NULL;
+            newcur->next->next=nullptr;
         }
         delete old;
         cout<<"Sorted successfully"<<endl;
@@ -190,7 +190,7 @@ void save(node *cur){
     ofstream outfile("students.txt");
     outfile << listsize << "," << idcount << endl;
     cur=cur->next;
-    while(cur!=NULL){
+    while(cur!=nullptr){
         outfile << cur->data.id << ","<< cur->data.no << ","<< cur->data.name << endl;
         cur=cur->next;
     }
@@ -198,13 +198,13 @@ void save(node *cur){
 }
 void reset(node *head) {
     node *current = head;
-    while (current != NULL) {
+    while (current != nullptr) {
         node *next = current->next;
         delete current;
         current = next;
-        idcount=0;
-        listsize=0;
     }
+    idcount=0;
+    listsize=0;
 }
 node *load(){
     ifstream infile("students.txt");
@@ -236,7 +236,7 @@ node *load(){
         size_t pos2 = line.find(",", pos1 + 1);
         if(pos1 != string::npos && pos2 != string::npos){
             node *newNode = new node;
-            newNode->next = NULL;
+            newNode->next = nullptr;
             newNode->data.id = stoi(line.substr(0, pos1));
             newNode->data.no = stoi(line.substr(pos1 + 1, pos2 - pos1 - 1));
             newNode->data.name = line.substr(pos2 + 1);
@@ -267,7 +267,7 @@ int main(){
         return 0;
     }
     node *head=initialize();
-    while(1){
+    while(true){
         int choice=menu();
         switch(choice){
             case 0:reset(head);return 0;
@@ -277,10 +277,10 @@ int main(){
             case 4:display(head);break;
             case 5:modify(head);break;
             case 6:cout<<"Total number of students: "<<listsize<<endl;break;
-            case 7:head=sort(head);break;
+            case 7:head=sortlist(head);break;
             case 8:save(head);break;
             case 9:reset(head);head=load();break;
-            default:cout<<"Invalid choice"<<endl;break;
+            default:cout<<"Invalid choice"<<endl;
         }
         system("pause");
     }
