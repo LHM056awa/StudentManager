@@ -1,41 +1,40 @@
 #include<iostream>
 #include<conio.h>
+#include<string>
 #include<fstream>
-#include <windows.h>
-#include <wincrypt.h>
-#include <sstream>
-#include <iomanip>
-#pragma comment(lib, "advapi32.lib")
-using namespace std;
+#include<windows.h>
+#include<wincrypt.h>
+#include<sstream>
+#include<iomanip>
+#include<limits>
+#pragma comment(lib,"advapi32.lib")
+struct Student{
+    int id,no;
+    std::string name;
+};
+struct Node{
+    Student data;
+    Node *next;
+};
 int listsize,idcount;
-struct student{
-    int id;
-    int no;
-    string name;
-};
-struct node{
-    student data;
-    node *next;
-};
-string mask(){
-    string password="";
+Node *tail = nullptr;
+std::string mask(){
+    std::string password;
     char ch;
-    cout<<"Enter your password: "<<flush;
+    std::cout<<"Enter your password: "<<std::flush;
     while(true){
         ch=_getch();
         if(ch==13||ch==10){
-            cout<<endl;
+            std::cout<<std::endl;
             break;
-        }
-        else if(ch==8||ch==127){
+        }else if(ch==8||ch==127){
             if(password.length()>0){
                 password.pop_back();
-                cout<<"\b \b"<<flush;
+                std::cout<<"\b \b"<<std::flush;
             }
-        }
-        else{
+        }else{
             password+=ch;
-            cout<<'*'<<flush;
+            std::cout<<'*'<<std::flush;
         }
     }
     return password;
@@ -83,119 +82,148 @@ bool verify() {
 }
 int menu() {
     system("cls");
-    cout << "========== Students Manager ==========\n";
-    cout << "1. Add\n";
-    cout << "2. Delete\n";
-    cout << "3. Search\n";
-    cout << "4. Display\n";
-    cout << "5. Modify\n";
-    cout<<"6. Count\n";
-    cout<<"7. Sort\n";
-    cout << "8. Save\n";
-    cout << "9. Load\n";
-    cout << "0. Exit\n";
-    cout << "==================================\n";
-    cout << "Enter your choice: "<<flush;
-    int choice=_getch()-'0';
-    cout<<endl;
-    return choice;
+    std::cout << "========== Student Manager ==========\n";
+    std::cout << "1. Add\n";
+    std::cout << "2. Delete\n";
+    std::cout << "3. Search\n";
+    std::cout << "4. Display\n";
+    std::cout << "5. Modify\n";
+    std::cout << "6. Count\n";
+    std::cout << "7. Sort\n";
+    std::cout << "8. Save\n";
+    std::cout << "9. Load\n";
+    std::cout << "0. Exit\n";
+    std::cout << "==================================\n";
+    std::cout << "Enter your choice: "<<std::flush;
+    char ch = _getch();
+    std::cout << ch << std::endl;
+    return ch - '0';
 }
-node *initialize(){
-    node *head=new node;
+Node *initialize(){
+    Node *head=new Node;
     head->data.id=0;
     head->data.no=-1;
     head->data.name="head";
     head->next=nullptr;
+    tail = head;
     return head;
 }
-void add(node *cur){
-    node *temp=new node;
-    temp->next=nullptr;
-    cout<<"Enter number: ";
-    cin>>temp->data.no;
-    cout<<"Enter name: ";
-    cin>>temp->data.name;
-    temp->data.id=++idcount;
-    while(cur->next!=nullptr){
-        cur=cur->next;
-    }
-    cur->next=temp;
-    ++listsize;
-    cout<<"ID: "<<idcount<<" added successfully"<<endl;
-}
-void del(node *cur){
-    cout<<"ID to be deleted: ";
-    int id;
-    cin>>id;
-    if(id<=0||id>idcount){
-        cout<<"ID: "<<id<<" not found"<<endl;
+void add(Node *cur){
+    int no;
+    std::cout<<"Enter number: ";
+    if(!(std::cin>>no)){
+        std::cout<<"Invalid number input."<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return;
     }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::string name;
+    std::cout<<"Enter name: ";
+    std::getline(std::cin, name);
+    Node *temp=new Node;
+    temp->next=nullptr;
+    temp->data.no=no;
+    temp->data.name=name;
+    temp->data.id=++idcount;
+    if(tail!=nullptr){
+        tail->next=temp;
+    } else {
+        cur->next=temp;
+    }
+    tail=temp;
+    ++listsize;
+    std::cout<<"ID: "<<idcount<<" added successfully"<<std::endl;
+}
+void del(Node *cur){
+    std::cout<<"ID to be deleted: ";
+    int id;
+    if(!(std::cin>>id)){
+        std::cout<<"Invalid ID input."<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return;
+    }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while(cur->next!=nullptr){
         if(cur->next->data.id==id){
-            node *temp=cur->next;
-            cur->next=cur->next->next;
+            Node *temp=cur->next;
+            if(temp==tail){
+                tail=cur;
+            }
+            cur->next=temp->next;
             delete temp;
             --listsize;
-            cout<<"Deleted successfully"<<endl;
+            std::cout<<"Deleted successfully"<<std::endl;
             return;
-        }
-        else{
+        }else{
             cur=cur->next;
         }
     }
-    cout<<"ID: "<<id<<" not found"<<endl;
+    std::cout<<"ID: "<<id<<" not found"<<std::endl;
 }
-void search(node *cur){
-    cout<<"ID to be searched: ";
+void search(Node *cur){
+    std::cout<<"ID to be searched: ";
     int id;
-    cin>>id;
+    if(!(std::cin>>id)){
+        std::cout<<"Invalid ID input."<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return;
+    }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while(cur->next!=nullptr){
         if(cur->next->data.id==id){
-            cout<<"ID Number Name"<<endl;
-            cout<<cur->next->data.id<<" "<<cur->next->data.no<<" "<<cur->next->data.name<<endl;
+            std::cout<<"ID Number Name"<<std::endl;
+            std::cout<<cur->next->data.id<<" "<<cur->next->data.no<<" "<<cur->next->data.name<<std::endl;
             return;
-        }
-        else{
+        }else{
             cur=cur->next;
         }
     }
-    cout<<"ID: "<<id<<" not found"<<endl;
+    std::cout<<"ID: "<<id<<" not found"<<std::endl;
 }
-void display(node *cur){
-    cout<<"ID Number Name"<<endl;
+void display(Node *cur){
+    std::cout<<"ID Number Name"<<std::endl;
     cur=cur->next;
     while(cur!=nullptr){
-        cout<<cur->data.id<<" "<<cur->data.no<<" "<<cur->data.name<<endl;
+        std::cout<<cur->data.id<<" "<<cur->data.no<<" "<<cur->data.name<<std::endl;
         cur=cur->next;
     }
 }
-void modify(node *cur){
-    cout<<"ID to be modified: ";
+void modify(Node *cur){
+    std::cout<<"ID to be modified: ";
     int id;
-    cin>>id;
-    if(id<=0||id>idcount){
-        cout<<"ID: "<<id<<" not found"<<endl;
+    if(!(std::cin>>id)){
+        std::cout<<"Invalid ID input."<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return;
     }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while(cur->next!=nullptr){
         if(cur->next->data.id==id){
-            cout<<"Enter new number: ";
-            cin>>cur->next->data.no;
-            cout<<"Enter new name: ";
-            cin>>cur->next->data.name;
-            cout<<"ID: "<<id<<" modified successfully"<<endl;
+            std::cout<<"Enter new number: ";
+            if(!(std::cin>>cur->next->data.no)){
+                std::cout<<"Invalid number input."<<std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                return;
+            }
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout<<"Enter new name: ";
+            std::getline(std::cin, cur->next->data.name);
+            std::cout<<"ID: "<<id<<" modified successfully"<<std::endl;
             return;
-        }
-        else{
+        }else{
             cur=cur->next;
         }
     }
-    cout<<"ID: "<<id<<" not found"<<endl;
+    std::cout<<"ID: "<<id<<" not found"<<std::endl;
 }
-node *sortlist(node *old){
+Node *sortlist(Node *old){
     if(listsize>0){
-        node *head=initialize(),*minp=old,*newcur=head,*oldcur=old;
+        Node *head=initialize(),*minp=old,*newcur=head,*oldcur=old;
         for(int i=0;i<listsize;++i){
             int minno=old->next->data.no;
             oldcur=old;
@@ -213,97 +241,138 @@ node *sortlist(node *old){
             newcur->next=minp->next;
             minp->next=minp->next->next;
             newcur->next->next=nullptr;
+            tail = newcur->next;
         }
         delete old;
-        cout<<"Sorted successfully"<<endl;
+        std::cout<<"Sorted successfully"<<std::endl;
         return head;
-    }
-    else{
-        cout<<"No data to sort"<<endl;
+    }else{
+        std::cout<<"No data to sort"<<std::endl;
         return old;
     }
 }
-void save(node *cur){
-    ofstream outfile("students.txt");
-    outfile << listsize << "," << idcount << endl;
+void save(Node *cur){
+    std::ofstream outfile("students.csv");
+    outfile << listsize << "," << idcount << std::endl;
     cur=cur->next;
     while(cur!=nullptr){
-        outfile << cur->data.id << ","<< cur->data.no << ","<< cur->data.name << endl;
+        outfile << cur->data.id << ","<< cur->data.no << ","<< cur->data.name << std::endl;
         cur=cur->next;
     }
-    cout << "Saved successfully! Total students: " << listsize << ", Last ID: " << idcount << endl;
+    std::cout << "Saved successfully to students.csv! Total students: " << listsize << ", Last ID: " << idcount << std::endl;
 }
-void reset(node *head) {
-    node *current = head;
+void reset(Node *head) {
+    Node *current = head;
     while (current != nullptr) {
-        node *next = current->next;
+        Node *next = current->next;
         delete current;
         current = next;
     }
     idcount=0;
     listsize=0;
+    tail = nullptr;
 }
-node *load(){
-    ifstream infile("students.txt");
+Node *load(){
+    std::ifstream infile("students.csv");
     if(!infile){
-        cout<<"Cannot open file for reading"<<endl;
-        cout<<"No saved data found. Creating new list."<<endl;
+        std::cout<<"Cannot open file for reading"<<std::endl;
+        std::cout<<"No saved data found. Creating new list."<<std::endl;
         return initialize();
     }
-    string firstLine;
-    getline(infile, firstLine);
-    size_t commaPos = firstLine.find(",");
-    if(commaPos == string::npos){
-        cout << "Error: Invalid file format!" << endl;
+    std::string firstLine;
+    if(!std::getline(infile, firstLine) || firstLine.empty()){
+        std::cout << "Error: Invalid file format!" << std::endl;
         infile.close();
         return initialize();
     }
-    listsize = stoi(firstLine.substr(0, commaPos));
-    int savedIdCount = stoi(firstLine.substr(commaPos + 1));
-    node *head = initialize();
-    node *current = head;
-    string line;
+    size_t commaPos = firstLine.find(",");
+    if(commaPos == std::string::npos){
+        std::cout << "Error: Invalid file format!" << std::endl;
+        infile.close();
+        return initialize();
+    }
+    int savedListSize;
+    int savedIdCount;
+    try{
+        savedListSize = std::stoi(firstLine.substr(0, commaPos));
+        savedIdCount = std::stoi(firstLine.substr(commaPos + 1));
+    }catch(...){
+        std::cout << "Error: Invalid file header!" << std::endl;
+        infile.close();
+        return initialize();
+    }
+    if(savedListSize < 0 || savedIdCount < 0){
+        std::cout << "Error: Invalid file header values!" << std::endl;
+        infile.close();
+        return initialize();
+    }
+    Node *head = initialize();
+    Node *current = head;
+    std::string line;
     int studentsLoaded = 0;
     int actualMaxId = 0;
-    while(getline(infile, line)){
+    bool badFormat = false;
+    while(std::getline(infile, line)){
         if(line.empty()){
             continue;
         }
         size_t pos1 = line.find(",");
         size_t pos2 = line.find(",", pos1 + 1);
-        if(pos1 != string::npos && pos2 != string::npos){
-            node *newNode = new node;
-            newNode->next = nullptr;
-            newNode->data.id = stoi(line.substr(0, pos1));
-            newNode->data.no = stoi(line.substr(pos1 + 1, pos2 - pos1 - 1));
-            newNode->data.name = line.substr(pos2 + 1);
-            if(newNode->data.id > actualMaxId){
-                actualMaxId = newNode->data.id;
-            }
-            current->next = newNode;
-            current = newNode;
-            ++studentsLoaded;
+        if(pos1 == std::string::npos || pos2 == std::string::npos){
+            badFormat = true;
+            break;
+        }
+        Node *newNode = new Node;
+        newNode->next = nullptr;
+        try{
+            newNode->data.id = std::stoi(line.substr(0, pos1));
+            newNode->data.no = std::stoi(line.substr(pos1 + 1, pos2 - pos1 - 1));
+        }catch(...){
+            delete newNode;
+            badFormat = true;
+            break;
+        }
+        newNode->data.name = line.substr(pos2 + 1);
+        if(newNode->data.id <= 0){
+            delete newNode;
+            badFormat = true;
+            break;
+        }
+        current->next = newNode;
+        current = newNode;
+        tail = newNode;
+        ++studentsLoaded;
+        if(newNode->data.id > actualMaxId){
+            actualMaxId = newNode->data.id;
         }
     }
     infile.close();
-    idcount = actualMaxId;
-    if(studentsLoaded != listsize){
-        cout << "Warning: Expected " << listsize << " students, but loaded " << studentsLoaded << endl;
-        listsize = studentsLoaded;
+    if(badFormat){
+        std::cout << "Error: Invalid file format! Loading aborted." << std::endl;
+        reset(head);
+        return initialize();
     }
-    if(savedIdCount != actualMaxId){
-        cout << "Note: File's idcount was " << savedIdCount << ", but actual max ID is " << actualMaxId << endl;
+    if(studentsLoaded == 0){
+        tail = head;
     }
-    cout << "Loaded successfully! Total students: " << listsize << ", Last ID: " << idcount << endl;
+    listsize = studentsLoaded;
+    idcount = std::max(savedIdCount, actualMaxId);
+    if(savedListSize != studentsLoaded){
+        std::cout << "Warning: Expected " << savedListSize << " students, but loaded " << studentsLoaded << std::endl;
+    }
+    if(savedIdCount != idcount){
+        std::cout << "Note: File's idcount was " << savedIdCount << ", effective max ID is " << idcount << std::endl;
+    }
+    std::cout << "Loaded successfully! Total students: " << listsize << ", Last ID: " << idcount << std::endl;
     return head;
 }
 int main(){
-    ios::sync_with_stdio(false);
+    std::ios::sync_with_stdio(false);
     if(!verify()){
         system("pause");
         return 0;
     }
-    node *head=initialize();
+    Node *head=initialize();
     while(true){
         int choice=menu();
         switch(choice){
@@ -313,11 +382,11 @@ int main(){
             case 3:search(head);break;
             case 4:display(head);break;
             case 5:modify(head);break;
-            case 6:cout<<"Total number of students: "<<listsize<<endl;break;
+            case 6:std::cout<<"Total number of students: "<<listsize<<std::endl;break;
             case 7:head=sortlist(head);break;
             case 8:save(head);break;
             case 9:reset(head);head=load();break;
-            default:cout<<"Invalid choice"<<endl;
+            default:std::cout<<"Invalid choice"<<std::endl;
         }
         system("pause");
     }
