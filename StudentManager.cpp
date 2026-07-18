@@ -17,7 +17,18 @@ struct Node{
     Node *next;
 };
 int listsize,idcount;
-Node *tail = nullptr;
+Node *tail;
+std::string readName() {
+    std::string name;
+    while (true) {
+        std::cout << "Enter name: ";
+        std::getline(std::cin, name);
+        if (name.find(',') == std::string::npos) {
+            return name;
+        }
+        std::cout << "Name cannot contain comma. Please try again.\n";
+    }
+}
 std::string mask(){
     std::string password;
     char ch;
@@ -118,9 +129,7 @@ void add(Node *cur){
         return;
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::string name;
-    std::cout<<"Enter name: ";
-    std::getline(std::cin, name);
+    std::string name = readName();
     Node *temp=new Node;
     temp->next=nullptr;
     temp->data.no=no;
@@ -211,8 +220,7 @@ void modify(Node *cur){
                 return;
             }
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout<<"Enter new name: ";
-            std::getline(std::cin, cur->next->data.name);
+            cur->next->data.name = readName();
             std::cout<<"ID: "<<id<<" modified successfully"<<std::endl;
             return;
         }else{
